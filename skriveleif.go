@@ -19,6 +19,7 @@ package main
 import (
 	"fmt"
 	"image/color"
+	"log"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -33,8 +34,11 @@ const credit string = "Credit: Språkrådet / UiB ordbokene.no"
 
 func main() {
 	app := app.New()
-	drv := app.Driver()
-	win := drv.(desktop.Driver).CreateSplashWindow()
+	drv, ok := app.Driver().(desktop.Driver)
+	if !ok {
+		log.Fatalf("%s only supports desktop", appName)
+	}
+	win := drv.CreateSplashWindow()
 
 	list := newSuggestionsList(win)
 	// Keep list hidden initially until there are suggestions to show.
