@@ -77,6 +77,11 @@ func main() {
 	footer := canvas.NewText(fmt.Sprintf("%s %s %s", appName, version, credit), color.White)
 	footer.TextSize = 12
 
+	// This should be a short lived app, quit on lost focus.
+	app.Lifecycle().SetOnExitedForeground(func() {
+		app.Quit()
+	})
+
 	win.SetContent(container.NewBorder(input, footer, nil, nil, list))
 	win.Canvas().Focus(input)
 	win.SetFixedSize(true)
