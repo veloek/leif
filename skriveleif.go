@@ -1,99 +1,79 @@
+// This file is part of Skriveleif.
+//
+// Skriveleif is free software: you can redistribute it and/or modify it under
+// the terms of the GNU General Public License as published by the Free Software
+// Foundation, either version 3 of the License, or (at your option) any later
+// version.
+//
+// Skriveleif is distributed in the hope that it will be useful, but WITHOUT ANY
+// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+// A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along with
+// Skriveleif. If not, see <https://www.gnu.org/licenses/>.
+
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"image/color"
-	"net/http"
-	"net/url"
-	"os"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/driver/desktop"
-	"fyne.io/fyne/v2/widget"
 )
 
 const appName string = "Skriveleif"
-const definitionUrl string = "https://ordbokene.no"
-const suggestionsUrl string = "https://ord.uib.no/api/suggest"
+const version string = "v0.1.0"
+const credit string = "Credit: Språkrådet / UiB ordbokene.no"
 
 func main() {
-	a := app.New()
-	drv := a.Driver()
-	w := drv.(desktop.Driver).CreateSplashWindow()
+	app := app.New()
+	drv := app.Driver()
+	win := drv.(desktop.Driver).CreateSplashWindow()
 
-	i := widget.NewEntry()
-	i.SetPlaceHolder("Søk...")
+	list := newSuggestionsList(win)
+	// Keep list hidden initially until there are suggestions to show.
+	list.Hide()
 
-	suggestions := binding.NewStringList()
-
-	l := widget.NewListWithData(suggestions,
-		func() fyne.CanvasObject {
-			return widget.NewLabel("template")
-		},
-		func(i binding.DataItem, o fyne.CanvasObject) {
-			o.(*widget.Label).Bind(i.(binding.String))
-		})
-	l.Hide()
-
-	l.OnSelected = func(id widget.ListItemID) {
-		v, err := suggestions.GetValue(id)
-		if err != nil {
-			return
-		}
-		u, _ := url.ParseRequestURI(fmt.Sprintf("%s/bm,nn/%s", definitionUrl, v))
-		a.OpenURL(u)
-		a.Quit()
+	// Open browser and quit once a suggestion is selected.
+	list.onSelected = func(s suggestion) {
+		app.OpenURL(s.getDefinitionUrl())
+		app.Quit()
 	}
 
-	f := canvas.NewText(fmt.Sprintf("%s v0.3.0 Credit: Språkrådet / UiB ordbokene.no", appName), color.White)
-	f.TextSize = 12
+	input := newInput(win)
+	input.SetPlaceHolder("Søk...")
 
-	i.OnChanged = func(s string) {
-		if len(s) < 3 {
-			l.Hide()
-			w.Resize(fyne.NewSize(0, 0))
-			return
+	input.OnChanged = func(s string) {
+		var result []suggestion
+
+		if len(s) > 1 {
+			result = search(s)
+			list.Set(result)
 		}
 
-		resp, err := http.Get(fmt.Sprintf("%s?include=e&dict=bm,nn&q=%s", suggestionsUrl, s))
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "error fetching suggestions: %v", err)
-			return
+		if len(result) > 0 {
+			list.Show()
+			win.Resize(fyne.NewSize(0, 200))
+		} else {
+			list.Hide()
+			win.Resize(fyne.NewSize(0, 0))
 		}
-
-		result := new(Suggestions)
-		json.NewDecoder(resp.Body).Decode(&result)
-
-		suggs := make([]string, result.Count)
-		for i, e := range result.Answer.Exact {
-			suggs[i] = e[0].(string)
-		}
-
-		suggestions.Set(suggs)
-		l.Show()
-		w.Resize(fyne.NewSize(0, 200))
 	}
 
-	// Move focus to list on enter.
-	i.OnSubmitted = func(s string) {
-		w.Canvas().Focus(l)
+	input.onMoveFocus = func() {
+		win.Canvas().Focus(list)
 	}
 
-	w.SetContent(container.NewBorder(i, f, nil, nil, l))
-	w.Canvas().Focus(i)
-	w.SetFixedSize(true)
-	w.CenterOnScreen()
-	w.ShowAndRun()
-}
+	footer := canvas.NewText(fmt.Sprintf("%s %s %s", appName, version, credit), color.White)
+	footer.TextSize = 12
 
-type Suggestions struct {
-	Count  int `json:"cnt"`
-	Answer struct {
-		Exact [][]any `json:"exact"`
-	} `json:"a"`
+	win.SetContent(container.NewBorder(input, footer, nil, nil, list))
+	win.Canvas().Focus(input)
+	win.SetFixedSize(true)
+	win.CenterOnScreen()
+	win.ShowAndRun()
 }
