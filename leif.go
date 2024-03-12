@@ -29,7 +29,7 @@ import (
 )
 
 const appName string = "Leif"
-const version string = "v0.1.0"
+const version string = "v0.1.2"
 const credit string = "Credit: Språkrådet / UiB ordbokene.no"
 
 func main() {
