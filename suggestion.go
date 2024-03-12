@@ -1,4 +1,4 @@
-// Skriveleif
+// Leif
 // Copyright (C) 2024  Vegard Løkken
 
 // This program is free software: you can redistribute it and/or modify

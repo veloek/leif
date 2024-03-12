@@ -1,4 +1,4 @@
-// Skriveleif
+// Leif
 // Copyright (C) 2024  Vegard Løkken
 
 // This program is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ import (
 	"fyne.io/fyne/v2/driver/desktop"
 )
 
-const appName string = "Skriveleif"
+const appName string = "Leif"
 const version string = "v0.1.0"
 const credit string = "Credit: Språkrådet / UiB ordbokene.no"
 

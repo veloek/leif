@@ -1,4 +1,4 @@
-module github.com/veloek/skriveleif
+module github.com/veloek/leif
 
 go 1.22.1
 

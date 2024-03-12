@@ -1,9 +1,11 @@
-Skriveleif
+Leif
 ========
 
-Skriveleif is a small application to search for Norwegian words and open their definition on [ordbøkene.no](https://ordbøkene.no), a service by _Språkrådet_ and _Universitetet i Bergen_.
+*Leif Er Ikke Feil*
 
-Skriveleif is inspired by [SRLookup](https://github.com/veloek/srlookup), but written from scratch in Go using the GUI toolkit [Fyne](https://fyne.io/).
+Leif is a small application to search for Norwegian words and open their definition on [ordbøkene.no](https://ordbøkene.no), a service by _Språkrådet_ and _Universitetet i Bergen_.
+
+Leif is inspired by [SRLookup](https://github.com/veloek/srlookup), but written from scratch in Go using the GUI toolkit [Fyne](https://fyne.io/).
 
 Build
 -----
@@ -12,12 +14,12 @@ Make sure you have the Go tool chain installed, then simply run:
 ```
 $ go build
 ```
-Then you should have an executable named `skriveleif` ready to run.
+Then you should have an executable named `leif` ready to run.
 
 Run
 ---
 
-Simply run the executable file `skriveleif`.
+Simply run the executable file `leif`.
 
 Usage
 -----
