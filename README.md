@@ -10,11 +10,11 @@ Leif is inspired by [SRLookup](https://github.com/veloek/srlookup), but written 
 Build
 -----
 
-Make sure you have the Go tool chain installed, then simply run:
+Make sure you have the Go tool chain installed, then install [fyne](https://docs.fyne.io/started/) and run:
 ```
-$ go build
+$ fyne build
 ```
-Then you should have an executable named `leif` ready to run.
+You should now have an executable named `leif` ready to run.
 
 Run
 ---
