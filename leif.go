@@ -28,15 +28,14 @@ import (
 	"fyne.io/fyne/v2/driver/desktop"
 )
 
-const appName string = "Leif"
-const version string = "v0.1.2"
 const credit string = "Credit: Språkrådet / UiB ordbokene.no"
 
 func main() {
 	app := app.New()
+	metadata := app.Metadata()
 	drv, ok := app.Driver().(desktop.Driver)
 	if !ok {
-		log.Fatalf("%s only supports desktop", appName)
+		log.Fatalf("%s only supports desktop", metadata.Name)
 	}
 	win := drv.CreateSplashWindow()
 
@@ -74,7 +73,8 @@ func main() {
 		win.Canvas().Focus(list)
 	}
 
-	footer := canvas.NewText(fmt.Sprintf("%s %s %s", appName, version, credit), color.White)
+	footer := canvas.NewText(fmt.Sprintf("%s v%s %s",
+		metadata.Name, metadata.Version, credit), color.White)
 	footer.TextSize = 12
 
 	// This should be a short lived app, quit on lost focus.
